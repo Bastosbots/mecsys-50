@@ -260,7 +260,7 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
                   className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2 flex-1 lg:flex-initial"
                 >
                   <Printer className="h-3 w-3 lg:h-4 lg:w-4" />
-                  <span className="mobile-text-xs lg:text-sm">Print</span>
+                  <span className="mobile-text-xs lg:text-sm">Imprimir</span>
                 </Button>
               )}
 
