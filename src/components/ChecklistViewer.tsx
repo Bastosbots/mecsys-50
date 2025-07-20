@@ -176,10 +176,10 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card border-b border-border mobile-card-padding lg:px-6 mobile-header-height lg:py-4">
-        <div className="flex flex-col space-y-2 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
+      <header className="bg-card border-b border-border mobile-card-padding lg:px-6 py-3 lg:py-4">
+        <div className="flex flex-col space-y-3 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-2 lg:gap-4">
-            <Button variant="outline" onClick={onBack} className="mobile-btn lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2">
+            <Button variant="outline" onClick={onBack} className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2">
               <ArrowLeft className="h-3 w-3 lg:h-4 lg:w-4" />
               <span className="mobile-text-xs lg:text-sm">Voltar</span>
             </Button>
@@ -191,47 +191,49 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
             </div>
           </div>
           
-          {/* Mobile: Buttons in a separate row */}
-          <div className="flex items-center gap-1 lg:gap-4 flex-wrap">
-            <Badge variant={checklist.completed_at ? "default" : "secondary"} className="mobile-text-xs lg:text-sm px-2 lg:px-4 py-1 lg:py-2">
+          {/* Buttons row - always in column on mobile for better visibility */}
+          <div className="flex flex-col space-y-2 lg:flex-row lg:space-y-0 lg:items-center lg:gap-4">
+            <Badge variant={checklist.completed_at ? "default" : "secondary"} className="mobile-text-xs lg:text-sm px-2 lg:px-4 py-1 lg:py-2 w-fit">
               {checklist.completed_at ? 'Concluído' : 'Pendente'}
             </Badge>
             
-            {/* PDF Download Button - Available for mechanics and admins */}
-            {canDownloadPDF && (
-              <Button 
-                onClick={() => generatePDF(false)}
-                variant="outline"
-                className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2"
-              >
-                <Download className="h-3 w-3 lg:h-4 lg:w-4" />
-                <span className="mobile-text-xs lg:text-sm">PDF</span>
-              </Button>
-            )}
+            <div className="flex items-center gap-2 lg:gap-4">
+              {/* PDF Download Button - Available for mechanics and admins */}
+              {canDownloadPDF && (
+                <Button 
+                  onClick={() => generatePDF(false)}
+                  variant="outline"
+                  className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2 flex-1 lg:flex-initial"
+                >
+                  <Download className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span className="mobile-text-xs lg:text-sm">PDF</span>
+                </Button>
+              )}
 
-            {/* PDF Print Button - Only available for admins */}
-            {isAdmin && (
-              <Button 
-                onClick={() => generatePDF(true)}
-                variant="outline"
-                className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2"
-              >
-                <Printer className="h-3 w-3 lg:h-4 lg:w-4" />
-                <span className="mobile-text-xs lg:text-sm">Print</span>
-              </Button>
-            )}
+              {/* PDF Print Button - Only available for admins */}
+              {isAdmin && (
+                <Button 
+                  onClick={() => generatePDF(true)}
+                  variant="outline"
+                  className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2 flex-1 lg:flex-initial"
+                >
+                  <Printer className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span className="mobile-text-xs lg:text-sm">Print</span>
+                </Button>
+              )}
 
-            {/* Only show complete button for admins and when status is "Em Andamento" */}
-            {isAdmin && checklist.status === 'Em Andamento' && (
-              <Button 
-                onClick={handleCompleteChecklist}
-                disabled={updateChecklistMutation.isPending}
-                className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2 bg-green-600 hover:bg-green-700"
-              >
-                <Check className="h-3 w-3 lg:h-4 lg:w-4" />
-                <span className="mobile-text-xs lg:text-sm">OK</span>
-              </Button>
-            )}
+              {/* Only show complete button for admins and when status is "Em Andamento" */}
+              {isAdmin && checklist.status === 'Em Andamento' && (
+                <Button 
+                  onClick={handleCompleteChecklist}
+                  disabled={updateChecklistMutation.isPending}
+                  className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2 bg-green-600 hover:bg-green-700 flex-1 lg:flex-initial"
+                >
+                  <Check className="h-3 w-3 lg:h-4 lg:w-4" />
+                  <span className="mobile-text-xs lg:text-sm">OK</span>
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </header>
