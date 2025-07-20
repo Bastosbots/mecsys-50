@@ -114,16 +114,6 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
     // Move to next section after both columns
     yPosition = Math.max(clientEndY, rightYPosition + 10);
 
-    // Progress section
-    doc.setFont('helvetica', 'bold');
-    doc.text('Progresso:', leftColX, yPosition);
-    yPosition += 8;
-    
-    doc.setFont('helvetica', 'normal');
-    const progressText = `${checkedItems}/${totalItems} itens verificados (${totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0}%)`;
-    doc.text(progressText, leftColX, yPosition);
-    
-    yPosition += 15;
 
     // Items table
     doc.setFont('helvetica', 'bold');
