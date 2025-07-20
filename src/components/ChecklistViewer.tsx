@@ -177,7 +177,7 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card border-b border-border mobile-card-padding lg:px-6 mobile-header-height lg:py-4">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
+        <div className="flex flex-col space-y-2 lg:space-y-0 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-2 lg:gap-4">
             <Button variant="outline" onClick={onBack} className="mobile-btn lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2">
               <ArrowLeft className="h-3 w-3 lg:h-4 lg:w-4" />
@@ -190,7 +190,9 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 lg:gap-4">
+          
+          {/* Mobile: Buttons in a separate row */}
+          <div className="flex items-center gap-1 lg:gap-4 flex-wrap">
             <Badge variant={checklist.completed_at ? "default" : "secondary"} className="mobile-text-xs lg:text-sm px-2 lg:px-4 py-1 lg:py-2">
               {checklist.completed_at ? 'Concluído' : 'Pendente'}
             </Badge>
@@ -200,10 +202,10 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
               <Button 
                 onClick={() => generatePDF(false)}
                 variant="outline"
-                className="mobile-btn lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2"
+                className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2"
               >
                 <Download className="h-3 w-3 lg:h-4 lg:w-4" />
-                <span className="mobile-text-xs lg:text-sm">Baixar PDF</span>
+                <span className="mobile-text-xs lg:text-sm">PDF</span>
               </Button>
             )}
 
@@ -212,10 +214,10 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
               <Button 
                 onClick={() => generatePDF(true)}
                 variant="outline"
-                className="mobile-btn lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2"
+                className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2"
               >
                 <Printer className="h-3 w-3 lg:h-4 lg:w-4" />
-                <span className="mobile-text-xs lg:text-sm">Imprimir</span>
+                <span className="mobile-text-xs lg:text-sm">Print</span>
               </Button>
             )}
 
@@ -224,10 +226,10 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
               <Button 
                 onClick={handleCompleteChecklist}
                 disabled={updateChecklistMutation.isPending}
-                className="mobile-btn lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2 bg-green-600 hover:bg-green-700"
+                className="mobile-btn-sm lg:h-10 lg:px-4 flex items-center gap-1 lg:gap-2 bg-green-600 hover:bg-green-700"
               >
                 <Check className="h-3 w-3 lg:h-4 lg:w-4" />
-                <span className="mobile-text-xs lg:text-sm">Concluir</span>
+                <span className="mobile-text-xs lg:text-sm">OK</span>
               </Button>
             )}
           </div>
