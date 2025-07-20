@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Download, Printer } from "lucide-react";
 import { useChecklistItems } from "@/hooks/useChecklistItems";
 import { useUpdateChecklist } from "@/hooks/useChecklists";
 import { useAuth } from "@/hooks/useAuth";
+import { useSystemSettings } from "@/hooks/useSystemSettings";
 import ChecklistProgress from "./checklist/ChecklistProgress";
 import ChecklistItems from "./checklist/ChecklistItems";
 import ChecklistInfo from "./checklist/ChecklistInfo";
@@ -20,6 +21,7 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
   const { data: items = [] } = useChecklistItems(checklist.id);
   const updateChecklistMutation = useUpdateChecklist();
   const { profile } = useAuth();
+  const { data: settings } = useSystemSettings();
 
   const totalItems = items.length;
   const checkedItems = items.filter((item: any) => item.checked).length;
@@ -43,77 +45,118 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
     const pageHeight = doc.internal.pageSize.height;
-    const margin = 20;
-    let yPosition = 30;
+    const margin = 15;
+    let yPosition = 20;
 
-    // Header
-    doc.setFontSize(18);
+    // Company header (centered)
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('CHECKLIST DE INSPEÇÃO', pageWidth/2, yPosition, { align: 'center' });
-    
-    yPosition += 25;
-
-    // Client and Vehicle Info in two columns
-    const leftCol = margin;
-    const rightCol = pageWidth/2 + 10;
-    
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('CLIENTE', leftCol, yPosition);
-    doc.text('VEÍCULO', rightCol, yPosition);
+    const companyName = settings?.company_name || 'Nome da Empresa';
+    doc.text(companyName, pageWidth/2, yPosition, { align: 'center' });
     
     yPosition += 8;
     
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${checklist.customer_name}`, leftCol, yPosition);
-    doc.text(`${checklist.vehicle_name}`, rightCol, yPosition);
+    if (settings?.company_address) {
+      doc.text(settings.company_address, pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 6;
+    }
     
-    yPosition += 6;
-    doc.text(`Placa: ${checklist.plate}`, rightCol, yPosition);
-    
-    yPosition += 6;
-    doc.text(`Status: ${checklist.status}`, rightCol, yPosition);
-    
-    yPosition += 20;
+    if (settings?.company_phone) {
+      doc.text(`Telefone: ${settings.company_phone}`, pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 6;
+    }
 
-    // Progress
+    yPosition += 10;
+
+    // Title CHECKLIST (centered and bold)
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('PROGRESSO', leftCol, yPosition);
+    doc.text('CHECKLIST DE INSPEÇÃO', pageWidth/2, yPosition, { align: 'center' });
+    
+    yPosition += 15;
+
+    // Two column layout for client and vehicle info
+    const leftColX = margin;
+    const rightColX = pageWidth/2 + 10;
+    
+    // Client section (left)
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Cliente:', leftColX, yPosition);
+    yPosition += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Nome: ${checklist.customer_name}`, leftColX, yPosition);
+    yPosition += 6;
+    
+    // Add some spacing for additional client info if needed
+    const clientEndY = yPosition + 10;
+
+    // Vehicle section (right) - reset yPosition for right column
+    let rightYPosition = yPosition - 14; // Start at same level as "Cliente:"
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text('Veículo:', rightColX, rightYPosition);
+    rightYPosition += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Modelo: ${checklist.vehicle_name}`, rightColX, rightYPosition);
+    rightYPosition += 6;
+    
+    doc.text(`Placa: ${checklist.plate}`, rightColX, rightYPosition);
+    rightYPosition += 6;
+    
+    doc.text(`Status: ${checklist.status}`, rightColX, rightYPosition);
+    rightYPosition += 6;
+
+    // Move to next section after both columns
+    yPosition = Math.max(clientEndY, rightYPosition + 10);
+
+    // Progress section
+    doc.setFont('helvetica', 'bold');
+    doc.text('Progresso:', leftColX, yPosition);
     yPosition += 8;
     
     doc.setFont('helvetica', 'normal');
     const progressText = `${checkedItems}/${totalItems} itens verificados (${totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0}%)`;
-    doc.text(progressText, leftCol, yPosition);
+    doc.text(progressText, leftColX, yPosition);
     
-    yPosition += 20;
-
-    // Items Table
-    doc.setFont('helvetica', 'bold');
-    doc.text('ITENS DE INSPEÇÃO', leftCol, yPosition);
     yPosition += 15;
 
-    // Table headers
-    const tableStartY = yPosition;
-    const rowHeight = 8;
-    const colWidths = [20, 80, 40, 50];
-    const colPositions = [leftCol];
-    for (let i = 1; i < colWidths.length; i++) {
-      colPositions.push(colPositions[i-1] + colWidths[i-1]);
-    }
-
-    // Header row
-    doc.setFillColor(240, 240, 240);
-    doc.rect(leftCol, yPosition, pageWidth - 2*margin, rowHeight, 'F');
-    doc.rect(leftCol, yPosition, pageWidth - 2*margin, rowHeight);
-    
+    // Items table
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text('Status', colPositions[0] + 2, yPosition + 5);
-    doc.text('Item', colPositions[1] + 2, yPosition + 5);
-    doc.text('Categoria', colPositions[2] + 2, yPosition + 5);
-    doc.text('Observação', colPositions[3] + 2, yPosition + 5);
+    doc.text('Itens de Inspeção:', leftColX, yPosition);
+    yPosition += 10;
+
+    // Table headers with borders
+    const tableY = yPosition;
+    const tableHeight = 8;
+    const colWidths = [20, 80, 40, 35];
+    const colPositions = [leftColX, leftColX + colWidths[0], leftColX + colWidths[0] + colWidths[1], leftColX + colWidths[0] + colWidths[1] + colWidths[2]];
+    const tableWidth = colWidths.reduce((sum, width) => sum + width, 0);
+
+    // Header background and borders
+    doc.setFillColor(240, 240, 240);
+    doc.rect(leftColX, tableY, tableWidth, tableHeight, 'F');
     
-    yPosition += rowHeight;
+    // Header borders
+    doc.setLineWidth(0.3);
+    doc.rect(leftColX, tableY, tableWidth, tableHeight);
+    colPositions.slice(1).forEach(pos => {
+      doc.line(pos, tableY, pos, tableY + tableHeight);
+    });
+
+    // Header text
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Status', colPositions[0] + 8, tableY + 5);
+    doc.text('Item', colPositions[1] + 2, tableY + 5);
+    doc.text('Categoria', colPositions[2] + 2, tableY + 5);
+    doc.text('Observação', colPositions[3] + 2, tableY + 5);
+
+    yPosition = tableY + tableHeight;
 
     // Data rows
     doc.setFont('helvetica', 'normal');
@@ -123,16 +166,21 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
         yPosition = 30;
       }
 
-      // Row border
-      doc.rect(leftCol, yPosition, pageWidth - 2*margin, rowHeight);
+      const rowY = yPosition;
       
+      // Row borders
+      doc.rect(leftColX, rowY, tableWidth, tableHeight);
+      colPositions.slice(1).forEach(pos => {
+        doc.line(pos, rowY, pos, rowY + tableHeight);
+      });
+
       // Row data
-      doc.text(item.checked ? '✓' : '○', colPositions[0] + 8, yPosition + 5);
-      doc.text(item.item_name.substring(0, 35), colPositions[1] + 2, yPosition + 5);
-      doc.text(item.category.substring(0, 18), colPositions[2] + 2, yPosition + 5);
-      doc.text((item.observation || '').substring(0, 22), colPositions[3] + 2, yPosition + 5);
+      doc.text(item.checked ? '✓' : '○', colPositions[0] + 8, rowY + 5);
+      doc.text(item.item_name.substring(0, 35), colPositions[1] + 2, rowY + 5);
+      doc.text(item.category.substring(0, 18), colPositions[2] + 2, rowY + 5);
+      doc.text((item.observation || '').substring(0, 22), colPositions[3] + 2, rowY + 5);
       
-      yPosition += rowHeight;
+      yPosition += tableHeight;
     });
 
     yPosition += 15;
@@ -145,18 +193,19 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
       }
       
       doc.setFont('helvetica', 'bold');
-      doc.text('OBSERVAÇÕES GERAIS', leftCol, yPosition);
+      doc.text('Observações Gerais:', leftColX, yPosition);
       yPosition += 10;
       
       doc.setFont('helvetica', 'normal');
       const splitObservations = doc.splitTextToSize(checklist.general_observations, pageWidth - 2*margin);
-      doc.text(splitObservations, leftCol, yPosition);
+      doc.text(splitObservations, leftColX, yPosition);
     }
 
-    // Footer
+    // Footer with date and checklist info
     doc.setFontSize(8);
-    doc.text(`Data: ${new Date(checklist.created_at).toLocaleDateString('pt-BR')}`, leftCol, pageHeight - 20);
-    doc.text(`Checklist: ${checklist.vehicle_name} - ${checklist.plate}`, pageWidth - margin, pageHeight - 20, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Checklist: ${checklist.vehicle_name} - ${checklist.plate}`, leftColX, pageHeight - 15);
+    doc.text(`Data: ${new Date(checklist.created_at).toLocaleDateString('pt-BR')}`, pageWidth - margin, pageHeight - 15, { align: 'right' });
 
     const fileName = `checklist-${checklist.plate}-${new Date().toISOString().split('T')[0]}.pdf`;
 
