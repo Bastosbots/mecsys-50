@@ -193,8 +193,11 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
           
           {/* Buttons row - always in column on mobile for better visibility */}
           <div className="flex flex-col space-y-2 lg:flex-row lg:space-y-0 lg:items-center lg:gap-4">
-            <Badge variant={checklist.completed_at ? "default" : "secondary"} className="mobile-text-xs lg:text-sm px-2 lg:px-4 py-1 lg:py-2 w-fit">
-              {checklist.completed_at ? 'Concluído' : 'Pendente'}
+            <Badge 
+              variant={checklist.status === 'Concluído' ? "default" : "secondary"} 
+              className="mobile-text-xs lg:text-sm px-2 lg:px-4 py-1 lg:py-2 w-fit"
+            >
+              {checklist.status}
             </Badge>
             
             <div className="flex items-center gap-2 lg:gap-4">
