@@ -108,8 +108,7 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
     doc.text(`Placa: ${checklist.plate}`, rightColX, rightYPosition);
     rightYPosition += 6;
     
-    doc.text(`Status: ${checklist.status}`, rightColX, rightYPosition);
-    rightYPosition += 6;
+   
 
     // Move to next section after both columns
     yPosition = Math.max(clientEndY, rightYPosition + 10);
