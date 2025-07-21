@@ -154,6 +154,41 @@ export type Database = {
           },
         ]
       }
+      checklist_public_links: {
+        Row: {
+          checklist_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          public_token: string
+        }
+        Insert: {
+          checklist_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          public_token: string
+        }
+        Update: {
+          checklist_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          public_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_public_links_checklist_id_fkey"
+            columns: ["checklist_id"]
+            isOneToOne: false
+            referencedRelation: "checklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checklists: {
         Row: {
           completed_at: string | null
@@ -496,6 +531,10 @@ export type Database = {
     Functions: {
       generate_budget_number: {
         Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_or_create_checklist_public_link: {
+        Args: { p_checklist_id: string }
         Returns: string
       }
       get_security_audit_logs: {
