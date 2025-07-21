@@ -154,11 +154,7 @@ const PublicChecklist = () => {
               <div>
                 <span className="font-medium">Data:</span> {format(new Date(checklist.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
               </div>
-              {checklist.completed_at && (
-                <div>
-                  <span className="font-medium">Concluído em:</span> {format(new Date(checklist.completed_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                </div>
-              )}
+
             </CardContent>
           </Card>
 
