@@ -1,13 +1,13 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Edit, Download, Share2 } from "lucide-react";
+import { ArrowLeft, Edit, Share2 } from "lucide-react";
 import { useBudgetItems } from "@/hooks/useBudgets";
 import { useAuth } from "@/hooks/useAuth";
 import { useCreateBudgetPublicLink } from "@/hooks/usePublicLinks";
 import BudgetStatus from "./BudgetStatus";
-import { generateBudgetPDF } from "@/utils/pdfGenerator";
 
 interface BudgetViewerProps {
   budget: any;
@@ -20,20 +20,11 @@ const BudgetViewer = ({ budget, onBack, onEdit }: BudgetViewerProps) => {
   const { profile } = useAuth();
 
   const canEdit = profile?.role === 'admin' || profile?.id === budget.mechanic_id;
-  const canDownloadPdf = true; // TODO: check permissions
 
   const { mutate: createPublicLink, isPending: isCreatingLink } = useCreateBudgetPublicLink();
 
   const handleSharePublicLink = () => {
     createPublicLink(budget.id);
-  };
-
-  const handleDownloadPdf = async () => {
-    try {
-      await generateBudgetPDF(budget, items);
-    } catch (error) {
-      console.error("Erro ao gerar o PDF:", error);
-    }
   };
 
   if (!budget) {
@@ -75,12 +66,6 @@ const BudgetViewer = ({ budget, onBack, onEdit }: BudgetViewerProps) => {
             <Button onClick={() => onEdit(budget)}>
               <Edit className="h-4 w-4 mr-2" />
               Editar
-            </Button>
-          )}
-          {canDownloadPdf && (
-            <Button variant="outline" onClick={handleDownloadPdf}>
-              <Download className="h-4 w-4 mr-2" />
-              Baixar PDF
             </Button>
           )}
         </div>

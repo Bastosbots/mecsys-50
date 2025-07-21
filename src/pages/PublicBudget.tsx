@@ -34,16 +34,20 @@ const PublicBudget = () => {
       // Get the budget details
       const { data: budgetData, error: budgetError } = await supabase
         .from('budgets')
-        .select(`
-          *,
-          mechanic:profiles!budgets_mechanic_id_fkey(full_name)
-        `)
+        .select('*')
         .eq('id', linkData.budget_id)
         .single();
 
       if (budgetError || !budgetData) {
         throw new Error('Orçamento não encontrado');
       }
+
+      // Get the mechanic info separately
+      const { data: mechanicData, error: mechanicError } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', budgetData.mechanic_id)
+        .single();
 
       // Get budget items
       const { data: itemsData, error: itemsError } = await supabase
@@ -56,7 +60,11 @@ const PublicBudget = () => {
         throw new Error('Erro ao carregar itens do orçamento');
       }
 
-      return { ...budgetData, items: itemsData || [] };
+      return { 
+        ...budgetData, 
+        items: itemsData || [], 
+        mechanic: mechanicData || null 
+      };
     },
     enabled: !!token,
   });
