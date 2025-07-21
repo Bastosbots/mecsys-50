@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
 import { Menu } from 'lucide-react';
@@ -7,10 +8,6 @@ import { useSystemSettings } from '@/hooks/useSystemSettings';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
-
-interface LayoutProps {
-  children: React.ReactNode;
-}
 
 function MobileMenuButton() {
   const { toggleSidebar } = useSidebar();
@@ -42,7 +39,7 @@ function DesktopMenuButton() {
   );
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout() {
   const { data: settings } = useSystemSettings();
   const { profile } = useAuth();
   
@@ -81,7 +78,7 @@ export function Layout({ children }: LayoutProps) {
           
           {/* Main Content - Otimizado para mecânicos */}
           <div className={`flex-1 overflow-auto smooth-scroll safe-bottom ${isMechanic ? 'ios-bounce-fix android-scroll-fix' : ''}`}>
-            {children}
+            <Outlet />
           </div>
         </main>
       </div>
