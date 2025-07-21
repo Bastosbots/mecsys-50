@@ -12,6 +12,7 @@ import Budgets from "./pages/Budgets";
 import ServicesTable from "./pages/ServicesTable";
 import SystemSettings from "./pages/SystemSettings";
 import UserManagement from "./pages/UserManagement";
+import PublicChecklist from "./pages/PublicChecklist";
 import NotFound from "./pages/NotFound";
 import { Layout } from "./components/Layout";
 
@@ -53,24 +54,32 @@ const AppContent = () => {
     );
   }
 
-  if (!user || !profile) {
-    return <Auth />;
-  }
-
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/checklists" element={<AllChecklists />} />
-        <Route path="/budgets" element={<Budgets />} />
-        <Route path="/services" element={<ServicesTable />} />
-        <Route path="/settings" element={<SystemSettings />} />
-        <Route path="/system-settings" element={<SystemSettings />} />
-        <Route path="/user-management" element={<UserManagement />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Layout>
+    <Routes>
+      {/* Public route - no authentication required */}
+      <Route path="/public/checklist/:token" element={<PublicChecklist />} />
+      
+      {/* Protected routes */}
+      <Route path="/*" element={
+        !user || !profile ? (
+          <Auth />
+        ) : (
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/checklists" element={<AllChecklists />} />
+              <Route path="/budgets" element={<Budgets />} />
+              <Route path="/services" element={<ServicesTable />} />
+              <Route path="/settings" element={<SystemSettings />} />
+              <Route path="/system-settings" element={<SystemSettings />} />
+              <Route path="/user-management" element={<UserManagement />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        )
+      } />
+    </Routes>
   );
 };
 
