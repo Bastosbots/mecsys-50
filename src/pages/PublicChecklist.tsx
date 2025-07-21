@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Camera } from "lucide-react";
 
 const PublicChecklist = () => {
   const { token } = useParams<{ token: string }>();
@@ -104,6 +104,20 @@ const PublicChecklist = () => {
     }
   };
 
+  // Parse images from video_url field
+  const parseImages = (videoUrl: string | null) => {
+    if (!videoUrl) return [];
+    
+    try {
+      const parsed = JSON.parse(videoUrl);
+      return Array.isArray(parsed) ? parsed : [videoUrl];
+    } catch {
+      return [videoUrl];
+    }
+  };
+
+  const images = parseImages(checklist.video_url);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -172,12 +186,47 @@ const PublicChecklist = () => {
           </Card>
         </div>
 
+        {/* Photos Section */}
+        {images.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Camera className="h-5 w-5" />
+                Fotos da Inspeção
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {images.map((imageUrl, index) => (
+                  <div key={index} className="aspect-square bg-muted rounded-lg overflow-hidden">
+                    <img 
+                      src={imageUrl} 
+                      alt={`Foto da inspeção ${index + 1}`}
+                      className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => window.open(imageUrl, '_blank')}
+                      onError={(e) => {
+                        console.error('Erro ao carregar imagem:', imageUrl);
+                        (e.target as HTMLImageElement).src = '/placeholder.svg';
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Items by Category */}
         <div className="space-y-6">
           {Object.entries(itemsByCategory).map(([category, categoryItems]) => (
             <Card key={category}>
               <CardHeader>
-                <CardTitle className="text-lg">{category}</CardTitle>
+                <CardTitle className="text-lg flex items-center justify-between">
+                  <span>{category}</span>
+                  <Badge variant="outline" className="text-sm">
+                    {categoryItems.filter(item => item.checked).length}/{categoryItems.length}
+                  </Badge>
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -191,7 +240,15 @@ const PublicChecklist = () => {
                         )}
                       </div>
                       <div className="flex-1">
-                        <div className="font-medium">{item.item_name}</div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium">{item.item_name}</span>
+                          <Badge 
+                            variant={item.checked ? "default" : "destructive"} 
+                            className="text-xs px-2 py-0.5"
+                          >
+                            {item.checked ? 'Verificado' : 'Não Verificado'}
+                          </Badge>
+                        </div>
                         {item.observation && (
                           <div className="text-sm text-muted-foreground mt-1">
                             <span className="font-medium">Observação:</span> {item.observation}
