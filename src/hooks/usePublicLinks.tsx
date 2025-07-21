@@ -25,3 +25,26 @@ export const useCreatePublicLink = () => {
     },
   });
 };
+
+export const useCreateBudgetPublicLink = () => {
+  return useMutation({
+    mutationFn: async (budgetId: string) => {
+      const { data, error } = await supabase
+        .rpc('get_or_create_budget_public_link', {
+          p_budget_id: budgetId
+        });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (token) => {
+      const publicUrl = `${window.location.origin}/public/budget/${token}`;
+      navigator.clipboard.writeText(publicUrl);
+      toast.success('Link público do orçamento copiado para a área de transferência!');
+    },
+    onError: (error) => {
+      console.error('Erro ao gerar link público do orçamento:', error);
+      toast.error('Erro ao gerar link público do orçamento');
+    },
+  });
+};

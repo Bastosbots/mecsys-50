@@ -65,6 +65,41 @@ export type Database = {
           },
         ]
       }
+      budget_public_links: {
+        Row: {
+          budget_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          public_token: string
+        }
+        Insert: {
+          budget_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          public_token: string
+        }
+        Update: {
+          budget_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          public_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_public_links_budget_id_fkey"
+            columns: ["budget_id"]
+            isOneToOne: false
+            referencedRelation: "budgets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       budgets: {
         Row: {
           budget_number: string
@@ -531,6 +566,10 @@ export type Database = {
     Functions: {
       generate_budget_number: {
         Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_or_create_budget_public_link: {
+        Args: { p_budget_id: string }
         Returns: string
       }
       get_or_create_checklist_public_link: {

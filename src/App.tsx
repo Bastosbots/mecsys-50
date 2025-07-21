@@ -1,86 +1,53 @@
 
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider, useAuth } from "@/hooks/useAuth";
-import Auth from "./pages/Auth";
-import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
-import AllChecklists from "./pages/AllChecklists";
-import Budgets from "./pages/Budgets";
-import ServicesTable from "./pages/ServicesTable";
-import SystemSettings from "./pages/SystemSettings";
-import UserManagement from "./pages/UserManagement";
-import PublicChecklist from "./pages/PublicChecklist";
-import NotFound from "./pages/NotFound";
-import { Layout } from "./components/Layout";
+import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { ThemeProvider } from "next-themes"
+import Layout from "./components/Layout"
+import Index from "./pages/Index"
+import Auth from "./pages/Auth"
+import Dashboard from "./pages/Dashboard"
+import AllChecklists from "./pages/AllChecklists"
+import Budgets from "./pages/Budgets"
+import ServicesTable from "./pages/ServicesTable"
+import UserManagement from "./pages/UserManagement"
+import SystemSettings from "./pages/SystemSettings"
+import Register from "./pages/Register"
+import Signup from "./pages/Signup"
+import PublicChecklist from "./pages/PublicChecklist"
+import PublicBudget from "./pages/PublicBudget"
+import NotFound from "./pages/NotFound"
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 3,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+const queryClient = new QueryClient()
 
-const App = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute="class" defaultTheme="light">
       <TooltipProvider>
         <Toaster />
-        <AuthProvider>
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/signup/:token" element={<Signup />} />
+            <Route path="/public/checklist/:token" element={<PublicChecklist />} />
+            <Route path="/public/budget/:token" element={<PublicBudget />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Index />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="checklists" element={<AllChecklists />} />
+              <Route path="budgets" element={<Budgets />} />
+              <Route path="services" element={<ServicesTable />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="settings" element={<SystemSettings />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
-  );
-};
+    </ThemeProvider>
+  </QueryClientProvider>
+)
 
-const AppContent = () => {
-  const { user, profile, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <Routes>
-      {/* Public route - no authentication required */}
-      <Route path="/public/checklist/:token" element={<PublicChecklist />} />
-      
-      {/* Protected routes */}
-      <Route path="/*" element={
-        !user || !profile ? (
-          <Auth />
-        ) : (
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/checklists" element={<AllChecklists />} />
-              <Route path="/budgets" element={<Budgets />} />
-              <Route path="/services" element={<ServicesTable />} />
-              <Route path="/settings" element={<SystemSettings />} />
-              <Route path="/system-settings" element={<SystemSettings />} />
-              <Route path="/user-management" element={<UserManagement />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        )
-      } />
-    </Routes>
-  );
-};
-
-export default App;
+export default App
