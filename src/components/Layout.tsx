@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/hooks/useAuth"
 import { AppSidebar } from "@/components/AppSidebar"
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
@@ -16,7 +17,8 @@ function SidebarToggleButton() {
           ? 'top-4 left-60 -translate-x-8' // Canto superior direito do sidebar quando aberto
           : 'top-4 left-4' // Canto superior esquerdo quando fechado
         }
-        // Mobile: botão flutuante e redondo no canto
+        // Mobile: botão flutuante e redondo no canto superior esquerdo
+        md:static md:top-auto md:left-auto md:translate-x-0
         h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg
         hover:bg-primary/90 flex items-center justify-center
         // Desktop: botão quadrado normal
@@ -70,8 +72,10 @@ export function Layout() {
         <AppSidebar />
         <main className="flex-1 overflow-hidden">
           <div className="flex-1 overflow-auto relative">
-            <SidebarToggleButton />
-            <Outlet />
+            <div className="pt-16 md:pt-0">
+              <SidebarToggleButton />
+              <Outlet />
+            </div>
           </div>
         </main>
       </div>
