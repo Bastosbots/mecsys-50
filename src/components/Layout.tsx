@@ -1,10 +1,35 @@
 
-
 import { useAuth } from "@/hooks/useAuth"
 import { AppSidebar } from "@/components/AppSidebar"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import { Outlet } from "react-router-dom"
 import { useSystemSettings } from "@/hooks/useSystemSettings"
+import { Menu } from "lucide-react"
+
+function SidebarToggleButton() {
+  const { state } = useSidebar();
+  
+  return (
+    <SidebarTrigger 
+      className={`
+        fixed z-50 transition-all duration-200 ease-in-out
+        ${state === 'expanded' 
+          ? 'top-4 left-60 -translate-x-8' // Canto superior direito do sidebar quando aberto
+          : 'top-4 left-4' // Canto superior esquerdo quando fechado
+        }
+        md:flex
+        // Mobile: botão flutuante e redondo
+        h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg
+        hover:bg-primary/90
+        // Desktop: botão quadrado normal
+        md:h-8 md:w-8 md:rounded-md md:bg-transparent md:text-foreground md:shadow-none
+        md:hover:bg-muted
+      `}
+    >
+      <Menu className="h-4 w-4" />
+    </SidebarTrigger>
+  );
+}
 
 export function Layout() {
   const { data: settings } = useSystemSettings();
@@ -47,7 +72,7 @@ export function Layout() {
         <AppSidebar />
         <main className="flex-1 overflow-hidden">
           <div className="flex-1 overflow-auto relative">
-            <SidebarTrigger className="fixed top-4 left-4 z-50 md:hidden lg:block" />
+            <SidebarToggleButton />
             <Outlet />
           </div>
         </main>
@@ -55,4 +80,3 @@ export function Layout() {
     </SidebarProvider>
   );
 }
-
