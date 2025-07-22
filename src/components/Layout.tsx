@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/hooks/useAuth"
 import { AppSidebar } from "@/components/AppSidebar"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Outlet } from "react-router-dom"
 import { useSystemSettings } from "@/hooks/useSystemSettings"
 
@@ -46,7 +46,8 @@ export function Layout() {
       <div className="flex min-h-screen w-full no-horizontal-scroll mobile-text tap-highlight-none">
         <AppSidebar />
         <main className="flex-1 overflow-hidden">
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto relative">
+            <SidebarTrigger className="fixed top-4 left-4 z-50 md:hidden lg:block" />
             <Outlet />
           </div>
         </main>

@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, FileText, Settings, LogOut, Menu, Cog, DollarSign, ExternalLink } from 'lucide-react';
+import { Home, FileText, Settings, LogOut, Cog, DollarSign, ExternalLink } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -62,7 +61,7 @@ const adminNavigation = [
 ];
 
 export function AppSidebar() {
-  const { state, toggleSidebar } = useSidebar();
+  const { state } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut, profile } = useAuth();
@@ -104,7 +103,6 @@ export function AppSidebar() {
       <div className="flex items-center justify-between mobile-card-padding lg:p-4 border-b border-border touch-target">
         {state !== 'collapsed' && (
           <div className="flex items-center gap-3">
-
             <div className="flex flex-col min-w-0">
               <h2 className="mobile-text-lg lg:text-lg font-semibold text-foreground truncate">{systemName}</h2>
               <p className="mobile-text-xs lg:text-xs text-muted-foreground truncate">{systemDescription}</p>
@@ -120,14 +118,6 @@ export function AppSidebar() {
             />
           </div>
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className={`${state === 'collapsed' ? 'mx-auto' : 'ml-auto'} touch-target h-7 w-7`}
-        >
-          <Menu className="h-4 w-4" />
-        </Button>
       </div>
 
       <SidebarContent>
