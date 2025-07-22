@@ -1,4 +1,5 @@
 
+
 import { useAuth } from "@/hooks/useAuth"
 import { AppSidebar } from "@/components/AppSidebar"
 import { SidebarProvider } from "@/components/ui/sidebar"
@@ -43,12 +44,7 @@ export function Layout() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full no-horizontal-scroll mobile-text tap-highlight-none">
-        <AppSidebar 
-          systemName={systemName}
-          systemDescription={systemDescription}
-          isAdmin={isAdmin}
-          isMechanic={isMechanic}
-        />
+        <AppSidebar />
         <main className="flex-1 overflow-hidden">
           <div className="flex-1 overflow-auto">
             <Outlet />
@@ -58,3 +54,4 @@ export function Layout() {
     </SidebarProvider>
   );
 }
+
