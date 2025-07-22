@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/hooks/useAuth"
 import { AppSidebar } from "@/components/AppSidebar"
 import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
@@ -17,10 +16,9 @@ function SidebarToggleButton() {
           ? 'top-4 left-60 -translate-x-8' // Canto superior direito do sidebar quando aberto
           : 'top-4 left-4' // Canto superior esquerdo quando fechado
         }
-        md:flex
-        // Mobile: botão flutuante e redondo
+        // Mobile: botão flutuante e redondo no canto
         h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg
-        hover:bg-primary/90
+        hover:bg-primary/90 flex items-center justify-center
         // Desktop: botão quadrado normal
         md:h-8 md:w-8 md:rounded-md md:bg-transparent md:text-foreground md:shadow-none
         md:hover:bg-muted
