@@ -41,13 +41,28 @@ function DesktopMenuButton() {
 
 export function Layout() {
   const { data: settings } = useSystemSettings();
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   
   const systemName = settings?.system_name || 'Oficina Check';
   const systemDescription = settings?.system_description || 'Sistema de Gestão';
   const isAdmin = profile?.role === 'admin';
   const isMechanic = profile?.role === 'mechanic';
+  const isAuthenticated = user && profile;
 
+  // Se não estiver autenticado, renderiza apenas o conteúdo principal sem sidebar
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen w-full">
+        <main className="flex-1 overflow-hidden h-screen">
+          <div className="flex-1 overflow-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Se estiver autenticado, renderiza o layout completo com sidebar
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full no-horizontal-scroll mobile-text tap-highlight-none">
