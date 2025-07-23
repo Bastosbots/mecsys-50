@@ -219,7 +219,7 @@ const PublicChecklist = () => {
       });
 
       // Row data
-      doc.text(item.checked ? 'Check' : '○', colPositions[0] + 2, rowY + 5);
+      doc.text(item.checked ? 'Check' : 'X', colPositions[0] + 2, rowY + 5);
       doc.text(item.item_name.substring(0, 35), colPositions[1] + 2, rowY + 5);
       doc.text(item.category.substring(0, 18), colPositions[2] + 2, rowY + 5);
       doc.text((item.observation || '').substring(0, 22), colPositions[3] + 2, rowY + 5);
