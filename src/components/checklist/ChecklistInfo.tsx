@@ -148,7 +148,7 @@ const ChecklistInfo = ({ checklist }: ChecklistInfoProps) => {
             <CardTitle className="mobile-text-sm lg:text-lg">Observações Gerais</CardTitle>
           </CardHeader>
           <CardContent className="mobile-card-padding lg:p-6">
-            <p className="mobile-text-xs lg:text-sm whitespace-pre-wrap">{checklist.general_observations}</p>
+            <p className="mobile-text-xs lg:text-sm whitespace-pre-wrap break-words overflow-hidden">{checklist.general_observations}</p>
           </CardContent>
         </Card>
       )}

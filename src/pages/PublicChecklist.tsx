@@ -235,18 +235,18 @@ const PublicChecklist = () => {
                           <XCircle className="h-5 w-5 text-red-600" />
                         )}
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium">{item.item_name}</span>
                           <Badge 
                             variant={item.checked ? "default" : "destructive"} 
-                            className="text-xs px-2 py-0.5"
+                            className="text-xs px-2 py-0.5 flex-shrink-0"
                           >
                             {item.checked ? 'Verificado' : 'Não Verificado'}
                           </Badge>
                         </div>
                         {item.observation && (
-                          <div className="text-sm text-muted-foreground mt-1">
+                          <div className="text-sm text-muted-foreground mt-1 break-words overflow-hidden">
                             <span className="font-medium">Observação:</span> {item.observation}
                           </div>
                         )}
@@ -266,7 +266,7 @@ const PublicChecklist = () => {
               <CardTitle>Observações Gerais</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm whitespace-pre-wrap">{checklist.general_observations}</p>
+              <p className="text-sm whitespace-pre-wrap break-words overflow-hidden">{checklist.general_observations}</p>
             </CardContent>
           </Card>
         )}
