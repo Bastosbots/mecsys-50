@@ -130,22 +130,14 @@ const PublicChecklist = () => {
 // Company header (centered)
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    const companyName = settings?.company_name || 'Nome da Empresa';
-    doc.text(companyName, pageWidth/2, yPosition, { align: 'center' });
+    doc.text('S. R. M. Servicos E Manutenção De Veiculos Ltda', pageWidth/2, yPosition, { align: 'center' });
+    
     
     yPosition += 8;
     
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    if (settings?.company_address) {
-      doc.text(settings.company_address, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 6;
-    }
-    
-    if (settings?.company_phone) {
-      doc.text(`Telefone: ${settings.company_phone}`, pageWidth/2, yPosition, { align: 'center' });
-      yPosition += 6;
-    }
+    doc.text('Avenida 25 de Agosto, nº: 4702, Centro - Rolim de Moura - RO', pageWidth/2, yPosition, { align: 'center' });
 
     yPosition += 10;
     
