@@ -43,24 +43,24 @@ const ChecklistItems = ({ items }: ChecklistItemsProps) => {
                 {groupedItems[category].map((item: any) => (
                   <div key={item.id} className="border rounded-lg mobile-card-padding lg:p-4 bg-card">
                     <div className="flex items-start gap-2 lg:gap-3">
-                      <div className="mt-1">
+                      <div className="mt-1 flex-shrink-0">
                         {item.checked ? (
                           <CheckCircle className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                         ) : (
                           <XCircle className="h-4 w-4 lg:h-5 lg:w-5 text-red-500" />
                         )}
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1 lg:gap-2 mb-1">
                           <span className={`mobile-text-xs lg:text-sm font-medium ${item.checked ? 'text-green-600' : 'text-red-500'}`}>
                             {item.item_name}
                           </span>
-                          <Badge variant={item.checked ? "default" : "destructive"} className="mobile-text-xs lg:text-xs px-1 lg:px-2 py-0.5">
+                          <Badge variant={item.checked ? "default" : "destructive"} className="mobile-text-xs lg:text-xs px-1 lg:px-2 py-0.5 flex-shrink-0">
                             {item.checked ? 'OK' : 'Não Verificado'}
                           </Badge>
                         </div>
                         {item.observation && (
-                          <div className="mt-1 lg:mt-2 p-1 lg:p-2 bg-muted rounded mobile-text-xs lg:text-sm">
+                          <div className="mt-1 lg:mt-2 p-1 lg:p-2 bg-muted rounded mobile-text-xs lg:text-sm break-words overflow-hidden">
                             <strong>Observação:</strong> {item.observation}
                           </div>
                         )}
