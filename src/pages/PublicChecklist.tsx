@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CheckCircle, XCircle, Clock, Camera, Download } from "lucide-react";
+import { useSystemSettings } from "@/hooks/useSystemSettings";
 import jsPDF from 'jspdf';
 
 const PublicChecklist = () => {
@@ -126,7 +127,27 @@ const PublicChecklist = () => {
     const margin = 15;
     let yPosition = 20;
 
+// Company header (centered)
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    const companyName = settings?.company_name || 'Nome da Empresa';
+    doc.text(companyName, pageWidth/2, yPosition, { align: 'center' });
+    
+    yPosition += 8;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    if (settings?.company_address) {
+      doc.text(settings.company_address, pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 6;
+    }
+    
+    if (settings?.company_phone) {
+      doc.text(`Telefone: ${settings.company_phone}`, pageWidth/2, yPosition, { align: 'center' });
+      yPosition += 6;
+    }
 
+    yPosition += 10;
     
     // Title CHECKLIST (centered and bold)
     doc.setFontSize(16);
