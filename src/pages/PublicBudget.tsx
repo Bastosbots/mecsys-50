@@ -4,12 +4,15 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { DollarSign, Calendar, User, Car, FileText } from "lucide-react";
+import { DollarSign, Calendar, User, Car, FileText, Download } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const PublicBudget = () => {
   const { token } = useParams<{ token: string }>();
@@ -69,6 +72,35 @@ const PublicBudget = () => {
     enabled: !!token,
   });
 
+  const downloadPDF = async () => {
+    try {
+      const element = document.getElementById('budget-content');
+      if (!element) return;
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 30;
+
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      pdf.save(`orcamento-${budget?.budget_number || 'documento'}.pdf`);
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -116,7 +148,7 @@ const PublicBudget = () => {
           </p>
         </div>
 
-        <div className="space-y-6">
+        <div id="budget-content" className="space-y-6">
           {/* Budget Header */}
           <Card>
             <CardHeader className="pb-4">
@@ -261,6 +293,14 @@ const PublicBudget = () => {
               </CardContent>
             </Card>
           )}
+        </div>
+
+        {/* PDF Download Button */}
+        <div className="mt-8 text-center">
+          <Button onClick={downloadPDF} className="gap-2">
+            <Download className="h-4 w-4" />
+            Baixar PDF
+          </Button>
         </div>
       </div>
     </div>
