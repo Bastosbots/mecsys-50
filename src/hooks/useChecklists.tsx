@@ -97,6 +97,15 @@ export const useUpdateChecklist = () => {
 
   return useMutation({
     mutationFn: async ({ id, ...checklistData }: Partial<ChecklistData> & { id: string }) => {
+      // Se o status está sendo alterado para "Concluído", definir completed_at
+      if (checklistData.status === 'Concluído') {
+        checklistData.completed_at = new Date().toISOString();
+      }
+      // Se o status está sendo alterado para algo diferente de "Concluído", remover completed_at
+      else if (checklistData.status && checklistData.status !== 'Concluído') {
+        checklistData.completed_at = null;
+      }
+
       const { data, error } = await supabase
         .from('checklists')
         .update(checklistData)

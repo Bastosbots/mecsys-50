@@ -26,8 +26,7 @@ const MechanicDashboard = () => {
     try {
       await updateChecklistMutation.mutateAsync({
         id: checklist.id,
-        status: 'Concluído',
-        completed_at: new Date().toISOString()
+        status: 'Concluído'
       });
       toast.success('Checklist concluído com sucesso!');
     } catch (error) {

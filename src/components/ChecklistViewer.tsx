@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,8 +32,7 @@ const ChecklistViewer = ({ checklist, onBack }: ChecklistViewerProps) => {
     try {
       await updateChecklistMutation.mutateAsync({
         id: checklist.id,
-        status: 'Concluído',
-        completed_at: new Date().toISOString()
+        status: 'Concluído'
       });
     } catch (error) {
       console.error('Error completing checklist:', error);
