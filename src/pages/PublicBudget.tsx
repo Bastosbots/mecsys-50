@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -12,7 +11,6 @@ import { DollarSign, Calendar, User, Car, FileText, Download } from "lucide-reac
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const PublicBudget = () => {
   const { token } = useParams<{ token: string }>();
@@ -72,33 +70,181 @@ const PublicBudget = () => {
     enabled: !!token,
   });
 
-  const downloadPDF = async () => {
-    try {
-      const element = document.getElementById('budget-content');
-      if (!element) return;
+  const downloadPDF = () => {
+    if (!budget) return;
 
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        backgroundColor: '#ffffff'
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 15;
+    let yPosition = 20;
+
+    // Company header (centered)
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('S. R. M. Servicos E Manutenção De Veiculos Ltda', pageWidth/2, yPosition, { align: 'center' });
+    
+    yPosition += 8;
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Avenida 25 de Agosto, nº: 4702, Centro - Rolim de Moura - RO', pageWidth/2, yPosition, { align: 'center' });
+
+    yPosition += 10;
+    
+    // Title ORÇAMENTO (centered and bold)
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ORÇAMENTO', pageWidth/2, yPosition, { align: 'center' });
+    
+    yPosition += 20;
+
+    // Two column layout for client and vehicle info
+    const leftColX = margin;
+    const rightColX = pageWidth/2 + 10;
+    
+    // Client section (left)
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Cliente:', leftColX, yPosition);
+    yPosition += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Nome: ${budget.customer_name || 'Não informado'}`, leftColX, yPosition);
+    yPosition += 6;
+    
+    doc.text(`Orçamento: ${budget.budget_number}`, leftColX, yPosition);
+    yPosition += 6;
+    
+    // Add some spacing for additional client info if needed
+    const clientEndY = yPosition + 10;
+
+    // Vehicle section (right) - reset yPosition for right column
+    let rightYPosition = yPosition - 20; // Start at same level as "Cliente:"
+    
+    doc.setFont('helvetica', 'bold');
+    doc.text('Veículo:', rightColX, rightYPosition);
+    rightYPosition += 8;
+    
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Modelo: ${budget.vehicle_name || 'Não informado'}`, rightColX, rightYPosition);
+    rightYPosition += 6;
+    
+    doc.text(`Status: ${budget.status}`, rightColX, rightYPosition);
+    rightYPosition += 6;
+    
+    doc.text(`Data: ${format(new Date(budget.created_at), 'dd/MM/yyyy', { locale: ptBR })}`, rightColX, rightYPosition);
+    rightYPosition += 6;
+
+    // Move to next section after both columns
+    yPosition = Math.max(clientEndY, rightYPosition + 10);
+
+    // Items table
+    doc.setFont('helvetica', 'bold');
+    doc.text('Itens do Orçamento:', leftColX, yPosition);
+    yPosition += 10;
+
+    // Table headers with borders
+    const tableY = yPosition;
+    const tableHeight = 8;
+    const colWidths = [70, 25, 25, 25, 30];
+    const colPositions = [leftColX, leftColX + colWidths[0], leftColX + colWidths[0] + colWidths[1], leftColX + colWidths[0] + colWidths[1] + colWidths[2], leftColX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3]];
+    const tableWidth = colWidths.reduce((sum, width) => sum + width, 0);
+
+    // Header background and borders
+    doc.setFillColor(240, 240, 240);
+    doc.rect(leftColX, tableY, tableWidth, tableHeight, 'F');
+    
+    // Header borders
+    doc.setLineWidth(0.3);
+    doc.rect(leftColX, tableY, tableWidth, tableHeight);
+    colPositions.slice(1).forEach(pos => {
+      doc.line(pos, tableY, pos, tableY + tableHeight);
+    });
+
+    // Header text
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Serviço', colPositions[0] + 2, tableY + 5);
+    doc.text('Qtd', colPositions[1] + 2, tableY + 5);
+    doc.text('Valor Unit.', colPositions[2] + 2, tableY + 5);
+    doc.text('Categoria', colPositions[3] + 2, tableY + 5);
+    doc.text('Total', colPositions[4] + 2, tableY + 5);
+
+    yPosition = tableY + tableHeight;
+
+    // Data rows
+    doc.setFont('helvetica', 'normal');
+    if (budget.items && budget.items.length > 0) {
+      budget.items.forEach((item: any) => {
+        if (yPosition > pageHeight - 40) {
+          doc.addPage();
+          yPosition = 30;
+        }
+
+        const rowY = yPosition;
+        
+        // Row borders
+        doc.rect(leftColX, rowY, tableWidth, tableHeight);
+        colPositions.slice(1).forEach(pos => {
+          doc.line(pos, rowY, pos, rowY + tableHeight);
+        });
+
+        // Row data
+        doc.text(item.service_name.substring(0, 30), colPositions[0] + 2, rowY + 5);
+        doc.text(item.quantity.toString(), colPositions[1] + 2, rowY + 5);
+        doc.text(`R$ ${Number(item.unit_price).toFixed(2)}`, colPositions[2] + 2, rowY + 5);
+        doc.text(item.service_category.substring(0, 12), colPositions[3] + 2, rowY + 5);
+        doc.text(`R$ ${Number(item.total_price).toFixed(2)}`, colPositions[4] + 2, rowY + 5);
+        
+        yPosition += tableHeight;
       });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 30;
-
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save(`orcamento-${budget?.budget_number || 'documento'}.pdf`);
-    } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
     }
+
+    yPosition += 15;
+
+    // Summary section
+    doc.setFont('helvetica', 'bold');
+    doc.text('Resumo:', leftColX, yPosition);
+    yPosition += 10;
+
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Subtotal: R$ ${Number(budget.total_amount).toFixed(2)}`, leftColX, yPosition);
+    yPosition += 6;
+
+    if (budget.discount_amount > 0) {
+      doc.text(`Desconto: R$ ${Number(budget.discount_amount).toFixed(2)}`, leftColX, yPosition);
+      yPosition += 6;
+    }
+
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Total Final: R$ ${Number(budget.final_amount).toFixed(2)}`, leftColX, yPosition);
+    yPosition += 15;
+
+    // Observations
+    if (budget.observations) {
+      if (yPosition > pageHeight - 60) {
+        doc.addPage();
+        yPosition = 30;
+      }
+      
+      doc.setFont('helvetica', 'bold');
+      doc.text('Observações:', leftColX, yPosition);
+      yPosition += 10;
+      
+      doc.setFont('helvetica', 'normal');
+      const splitObservations = doc.splitTextToSize(budget.observations, pageWidth - 2*margin);
+      doc.text(splitObservations, leftColX, yPosition);
+    }
+
+    // Footer with date and budget info
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Orçamento: ${budget.budget_number}`, leftColX, pageHeight - 15);
+    doc.text(`Data: ${format(new Date(budget.created_at), 'dd/MM/yyyy', { locale: ptBR })}`, pageWidth - margin, pageHeight - 15, { align: 'right' });
+
+    const fileName = `orcamento-${budget.budget_number}-${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
   };
 
   if (isLoading) {
