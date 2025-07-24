@@ -4,8 +4,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Edit, Plus, DollarSign, Search, Filter, X } from "lucide-react";
+import { Eye, Edit, Plus, DollarSign, Search, Filter, X, Share2 } from "lucide-react";
 import { useBudgets } from "@/hooks/useBudgets";
+import { useCreateBudgetPublicLink } from "@/hooks/usePublicLinks";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -19,6 +20,7 @@ const Budgets = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: budgets = [], isLoading } = useBudgets();
   const { profile } = useAuth();
+  const { mutate: createPublicLink, isPending: isCreatingLink } = useCreateBudgetPublicLink();
   
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -107,6 +109,10 @@ const Budgets = () => {
   const totalBudgetsCount = isMechanic && profile?.id 
     ? budgets.filter(b => b.mechanic_id === profile.id).length 
     : budgets.length;
+
+  const handleSharePublicLink = (budgetId: string) => {
+    createPublicLink(budgetId);
+  };
 
   // Show form when creating or editing
   if (isCreating || editId) {
@@ -315,6 +321,20 @@ const Budgets = () => {
                           className={isAdmin ? 'h-6 w-6 p-0' : 'h-8 w-8 p-0'}
                         >
                           <Eye className={isAdmin ? 'h-3 w-3' : 'h-4 w-4'} />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleSharePublicLink(budget.id)}
+                          disabled={isCreatingLink}
+                          title="Compartilhar link público"
+                          className={isAdmin ? 'h-6 w-6 p-0' : 'h-8 w-8 p-0'}
+                        >
+                          {isCreatingLink ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-primary"></div>
+                          ) : (
+                            <Share2 className={isAdmin ? 'h-3 w-3' : 'h-4 w-4'} />
+                          )}
                         </Button>
                         {canEditBudget(budget) && (
                           <Button 
