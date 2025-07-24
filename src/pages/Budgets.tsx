@@ -257,7 +257,8 @@ const Budgets = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Cliente</TableHead>
+                {/* Show Cliente column only for admins */}
+                {isAdmin && <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Cliente</TableHead>}
                 <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Veículo</TableHead>
                 {isAdmin && <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Mecânico</TableHead>}
                 <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Valor</TableHead>
@@ -281,9 +282,12 @@ const Budgets = () => {
               ) : (
                 filteredBudgets.map((budget) => (
                   <TableRow key={budget.id}>
-                    <TableCell className={`font-medium ${isAdmin ? 'text-xs py-2' : 'text-sm py-3'}`}>
-                      {budget.customer_name || 'Cliente não informado'}
-                    </TableCell>
+                    {/* Show Cliente column only for admins */}
+                    {isAdmin && (
+                      <TableCell className={`font-medium ${isAdmin ? 'text-xs py-2' : 'text-sm py-3'}`}>
+                        {budget.customer_name || 'Cliente não informado'}
+                      </TableCell>
+                    )}
                     <TableCell className={isAdmin ? 'text-xs py-2' : 'text-sm py-3'}>
                       {budget.vehicle_name || 'N/A'}
                     </TableCell>

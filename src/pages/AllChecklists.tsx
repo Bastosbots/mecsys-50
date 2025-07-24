@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -35,6 +34,7 @@ const AllChecklists = () => {
   const isCreating = searchParams.get('create') === 'true';
   
   const isAdmin = profile?.role === 'admin';
+  const isMechanic = profile?.role === 'mechanic';
 
   // Filter checklists based on user role
   const checklists = useMemo(() => {
@@ -277,17 +277,20 @@ const AllChecklists = () => {
               />
             </div>
             
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className={isAdmin ? 'h-8 text-xs' : 'h-10'}>
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos os Status</SelectItem>
-                <SelectItem value="Em Andamento">Em Andamento</SelectItem>
-                <SelectItem value="Concluído">Concluído</SelectItem>
-                <SelectItem value="Cancelado">Cancelado</SelectItem>
-              </SelectContent>
-            </Select>
+            {/* Only show status filter for admins */}
+            {isAdmin && (
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className={isAdmin ? 'h-8 text-xs' : 'h-10'}>
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os Status</SelectItem>
+                  <SelectItem value="Em Andamento">Em Andamento</SelectItem>
+                  <SelectItem value="Concluído">Concluído</SelectItem>
+                  <SelectItem value="Cancelado">Cancelado</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
 
             {/* Only show mechanic filter for admins */}
             {isAdmin && (
@@ -327,12 +330,14 @@ const AllChecklists = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Cliente</TableHead>
+                {/* Show Cliente column only for admins */}
+                {isAdmin && <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Cliente</TableHead>}
                 <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Veículo</TableHead>
                 <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Placa</TableHead>
                 {/* Only show mechanic column for admins */}
                 {isAdmin && <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Mecânico</TableHead>}
-                <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Status</TableHead>
+                {/* Show Status column only for admins */}
+                {isAdmin && <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Status</TableHead>}
                 <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Data</TableHead>
                 <TableHead className={isAdmin ? 'text-xs h-8' : 'text-sm h-10'}>Ações</TableHead>
               </TableRow>
@@ -340,16 +345,19 @@ const AllChecklists = () => {
             <TableBody>
               {filteredChecklists.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={isAdmin ? 7 : 6} className={`text-center py-8 text-muted-foreground ${isAdmin ? 'text-xs' : 'text-sm'}`}>
+                  <TableCell colSpan={isAdmin ? 7 : 4} className={`text-center py-8 text-muted-foreground ${isAdmin ? 'text-xs' : 'text-sm'}`}>
                     {hasActiveFilters ? 'Nenhum checklist encontrado com os filtros aplicados.' : 'Nenhum checklist encontrado.'}
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredChecklists.map((checklist) => (
                   <TableRow key={checklist.id}>
-                    <TableCell className={`font-medium ${isAdmin ? 'text-xs py-2' : 'text-sm py-3'}`}>
-                      {checklist.customer_name}
-                    </TableCell>
+                    {/* Show Cliente column only for admins */}
+                    {isAdmin && (
+                      <TableCell className={`font-medium ${isAdmin ? 'text-xs py-2' : 'text-sm py-3'}`}>
+                        {checklist.customer_name}
+                      </TableCell>
+                    )}
                     <TableCell className={isAdmin ? 'text-xs py-2' : 'text-sm py-3'}>
                       {checklist.vehicle_name}
                     </TableCell>
@@ -362,15 +370,18 @@ const AllChecklists = () => {
                         {checklist.mechanic?.full_name || 'N/A'}
                       </TableCell>
                     )}
-                    <TableCell className={isAdmin ? 'py-2' : 'py-3'}>
-                      <Badge 
-                        variant="outline" 
-                        className={`${getStatusColor(checklist.status)} flex items-center gap-1 w-fit ${isAdmin ? 'text-xs px-1.5 py-0.5' : 'text-sm px-2 py-1'}`}
-                      >
-                        {getStatusIcon(checklist.status)}
-                        {checklist.status}
-                      </Badge>
-                    </TableCell>
+                    {/* Show Status column only for admins */}
+                    {isAdmin && (
+                      <TableCell className={isAdmin ? 'py-2' : 'py-3'}>
+                        <Badge 
+                          variant="outline" 
+                          className={`${getStatusColor(checklist.status)} flex items-center gap-1 w-fit ${isAdmin ? 'text-xs px-1.5 py-0.5' : 'text-sm px-2 py-1'}`}
+                        >
+                          {getStatusIcon(checklist.status)}
+                          {checklist.status}
+                        </Badge>
+                      </TableCell>
+                    )}
                     <TableCell className={isAdmin ? 'text-xs py-2' : 'text-sm py-3'}>
                       {format(new Date(checklist.created_at), 'dd/MM/yyyy', { locale: ptBR })}
                     </TableCell>
