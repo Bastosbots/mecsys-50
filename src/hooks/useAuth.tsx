@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,6 +37,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state change:', event, session?.user?.id);
+        
+        // Ignore SIGNED_UP events to prevent automatic login when creating users
+        if (event === 'SIGNED_UP') {
+          console.log('Ignoring SIGNED_UP event to prevent automatic login');
+          return;
+        }
         
         setSession(session);
         setUser(session?.user ?? null);
@@ -126,33 +133,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (username: string, password: string, fullName: string, role: string) => {
-    // Verificar se o username já existe
-    const { data: existingUser } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('username', username)
-      .maybeSingle();
+    try {
+      // Verificar se o username já existe
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .maybeSingle();
 
-    if (existingUser) {
-      return { error: { message: 'Nome de usuário já existe' } };
-    }
-
-    // Criar um email temporário baseado no username
-    const tempEmail = `${username}@mecsys.local`;
-
-    const { error } = await supabase.auth.signUp({
-      email: tempEmail,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          full_name: fullName,
-          role: role,
-          username: username
-        }
+      if (existingUser) {
+        return { error: { message: 'Nome de usuário já existe' } };
       }
-    });
-    return { error };
+
+      // Criar um email temporário baseado no username
+      const tempEmail = `${username}@mecsys.local`;
+
+      // Usar signUp mas desabilitar confirmação automática
+      const { error } = await supabase.auth.signUp({
+        email: tempEmail,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: fullName,
+            role: role,
+            username: username
+          }
+        }
+      });
+
+      // Importante: Não fazer login automático, apenas retornar o resultado
+      return { error };
+    } catch (err) {
+      console.error('Erro durante o signUp:', err);
+      return { error: { message: 'Erro interno do servidor' } };
+    }
   };
 
   const signOut = async () => {
