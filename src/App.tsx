@@ -42,6 +42,7 @@ const App = () => (
                 <Route path="budgets" element={<Budgets />} />
                 <Route path="services" element={<ServicesTable />} />
                 <Route path="users" element={<UserManagement />} />
+                <Route path="user-management" element={<UserManagement />} />
                 <Route path="settings" element={<SystemSettings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
