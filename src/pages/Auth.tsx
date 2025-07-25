@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,6 +28,10 @@ const Auth = () => {
 
   const systemName = settings?.system_name || 'Oficina Check';
   const logoUrl = settings?.company_logo_url;
+
+  useEffect(() => {
+    document.title = isLogin ? 'Login - MecSys' : 'Cadastro - MecSys';
+  }, [isLogin]);
 
   useEffect(() => {
     if (user) {

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth";
 import AdminDashboard from "@/components/AdminDashboard";
 import MechanicDashboard from "@/components/MechanicDashboard";
@@ -7,6 +7,14 @@ import Auth from "./Auth";
 
 const Index = () => {
   const { user, profile, loading } = useAuth();
+
+  useEffect(() => {
+    if (profile) {
+      document.title = profile.role === 'admin' ? 'Dashboard Admin - MecSys' : 'Dashboard Mecânico - MecSys';
+    } else {
+      document.title = 'MecSys - Sistema de Gestão';
+    }
+  }, [profile]);
 
   console.log('Index component - loading:', loading, 'user:', user, 'profile:', profile);
 

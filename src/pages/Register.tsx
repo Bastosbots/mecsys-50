@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +22,10 @@ const Register = () => {
     password: '',
     confirmPassword: ''
   });
+
+  useEffect(() => {
+    document.title = 'Registro - MecSys';
+  }, []);
 
   useEffect(() => {
     validateToken();
