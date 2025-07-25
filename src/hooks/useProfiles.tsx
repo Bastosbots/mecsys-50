@@ -50,6 +50,7 @@ export const useUpdateProfile = () => {
       return data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles'] });
       toast.success('Perfil atualizado com sucesso!');
     },
     onError: (error) => {
@@ -85,15 +86,16 @@ export const useUpdateUserData = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, fullName }: { userId: string; fullName?: string }) => {
+    mutationFn: async ({ userId, fullName, username }: { userId: string; fullName?: string; username?: string }) => {
       const { data, error } = await supabase.functions.invoke('update-user-data', {
-        body: { userId, fullName }
+        body: { userId, fullName, username }
       });
 
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles'] });
       toast.success('Dados alterados com sucesso!');
     },
     onError: (error) => {

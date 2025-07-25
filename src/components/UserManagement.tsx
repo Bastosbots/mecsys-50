@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,8 @@ const UserManagement = () => {
     confirmPassword: ''
   });
   const [userDataForm, setUserDataForm] = useState({
-    fullName: ''
+    fullName: '',
+    username: ''
   });
 
   const { data: users = [] } = useProfiles();
@@ -141,7 +143,8 @@ const UserManagement = () => {
   const handleUserDataChange = (user: any) => {
     setSelectedUser(user);
     setUserDataForm({
-      fullName: user.full_name || ''
+      fullName: user.full_name || '',
+      username: user.username || ''
     });
     setIsUserDataDialogOpen(true);
   };
@@ -154,12 +157,14 @@ const UserManagement = () => {
     try {
       await updateUserDataMutation.mutateAsync({
         userId: selectedUser.id,
-        fullName: userDataForm.fullName || undefined
+        fullName: userDataForm.fullName || undefined,
+        username: userDataForm.username || undefined
       });
       setIsUserDataDialogOpen(false);
       setSelectedUser(null);
       setUserDataForm({
-        fullName: ''
+        fullName: '',
+        username: ''
       });
     } catch (err) {
       // Error handled by the mutation
@@ -392,6 +397,17 @@ const UserManagement = () => {
                 placeholder="Digite o novo nome completo"
                 value={userDataForm.fullName}
                 onChange={(e) => setUserDataForm(prev => ({...prev, fullName: e.target.value}))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="updateUsername">Nome de Usuário</Label>
+              <Input
+                id="updateUsername"
+                type="text"
+                placeholder="Digite o novo nome de usuário"
+                value={userDataForm.username}
+                onChange={(e) => setUserDataForm(prev => ({...prev, username: e.target.value}))}
               />
             </div>
 
