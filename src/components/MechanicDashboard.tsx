@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Plus, FileText, Clock, Eye, Edit, Check } from "lucide-react";
+import { LogOut, Plus, FileText, Clock, Eye, Edit, Check, Share } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useChecklists, useUpdateChecklist } from "@/hooks/useChecklists";
+import { useCreatePublicLink } from "@/hooks/usePublicLinks";
 import CreateChecklistForm from "@/components/CreateChecklistForm";
 import ChecklistViewer from "@/components/ChecklistViewer";
 import EditChecklistForm from "@/components/EditChecklistForm";
@@ -14,6 +15,7 @@ const MechanicDashboard = () => {
   const { signOut, user, profile } = useAuth();
   const { data: checklists = [] } = useChecklists();
   const updateChecklistMutation = useUpdateChecklist();
+  const createPublicLinkMutation = useCreatePublicLink();
   const [activeView, setActiveView] = useState<'dashboard' | 'new-checklist' | 'view-checklist' | 'edit-checklist'>('dashboard');
   const [selectedChecklist, setSelectedChecklist] = useState<any>(null);
 
@@ -33,6 +35,10 @@ const MechanicDashboard = () => {
       console.error('Error completing checklist:', error);
       toast.error('Erro ao concluir checklist');
     }
+  };
+
+  const handleSharePublicLink = async (checklistId: string) => {
+    await createPublicLinkMutation.mutateAsync(checklistId);
   };
 
   const handleViewChecklist = (checklist: any) => {
@@ -250,6 +256,16 @@ const MechanicDashboard = () => {
                       >
                         <Edit className="h-3 w-3" />
                         <span>Editar</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSharePublicLink(checklist.id)}
+                        disabled={createPublicLinkMutation.isPending}
+                        className="h-9 px-3 text-xs flex items-center justify-center gap-2 touch-target flex-1 xs:flex-initial"
+                      >
+                        <Share className="h-3 w-3" />
+                        <span>Compartilhar</span>
                       </Button>
                     </div>
                   </div>
