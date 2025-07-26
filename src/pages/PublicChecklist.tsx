@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CheckCircle, XCircle, Clock, Camera, Download } from "lucide-react";
 import { useSystemSettings } from "@/hooks/useSystemSettings";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import jsPDF from 'jspdf';
 
 const PublicChecklist = () => {
@@ -56,6 +57,9 @@ const PublicChecklist = () => {
       return { checklist, items: items || [] };
     },
   });
+
+  // Set dynamic page title based on checklist data
+  usePageTitle(checklistData ? `Inspeção ${checklistData.checklist.vehicle_name} - ${checklistData.checklist.plate}` : 'Relatório de Inspeção');
 
   if (isLoading) {
     return (

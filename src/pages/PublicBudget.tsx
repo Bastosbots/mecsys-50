@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { DollarSign, Calendar, User, Car, FileText, Download } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import jsPDF from 'jspdf';
 
 const PublicBudget = () => {
@@ -69,6 +70,9 @@ const PublicBudget = () => {
     },
     enabled: !!token,
   });
+
+  // Set dynamic page title based on budget data
+  usePageTitle(budget ? `Orçamento ${budget.budget_number} - ${budget.customer_name || 'Cliente'}` : 'Orçamento Público');
 
   const downloadPDF = () => {
     if (!budget) return;
