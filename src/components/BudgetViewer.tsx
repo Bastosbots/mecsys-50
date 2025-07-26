@@ -48,27 +48,6 @@ const BudgetViewer = ({ budget, onBack, onEdit }: BudgetViewerProps) => {
           <h1 className="text-2xl font-bold">Orçamento {budget.budget_number}</h1>
           <BudgetStatus budget={budget} />
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleSharePublicLink}
-            disabled={isCreatingLink}
-            title="Compartilhar link público"
-          >
-            {isCreatingLink ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-            ) : (
-              <Share2 className="h-4 w-4" />
-            )}
-            {isCreatingLink ? 'Gerando...' : 'Compartilhar'}
-          </Button>
-          {canEdit && (
-            <Button onClick={() => onEdit(budget)}>
-              <Edit className="h-4 w-4 mr-2" />
-              Editar
-            </Button>
-          )}
-        </div>
       </div>
 
       <Card>
@@ -171,6 +150,32 @@ const BudgetViewer = ({ budget, onBack, onEdit }: BudgetViewerProps) => {
           </CardContent>
         </Card>
       )}
+
+      {/* Botões movidos para o final da página */}
+      <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+        <Button
+          variant="outline"
+          onClick={handleSharePublicLink}
+          disabled={isCreatingLink}
+          className="w-full sm:w-auto flex items-center justify-center gap-2"
+        >
+          {isCreatingLink ? (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+          ) : (
+            <Share2 className="h-4 w-4" />
+          )}
+          {isCreatingLink ? 'Gerando...' : 'Compartilhar'}
+        </Button>
+        {canEdit && (
+          <Button 
+            onClick={() => onEdit(budget)}
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            <Edit className="h-4 w-4" />
+            Editar
+          </Button>
+        )}
+      </div>
     </div>
   );
 };
