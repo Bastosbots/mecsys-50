@@ -43,22 +43,23 @@ serve(async (req) => {
       )
     }
 
-    // Create profile entry
+    // Update the profile that was created by the trigger, instead of inserting a new one
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
-      .insert({
-        id: userData.user.id,
+      .update({
         full_name: fullName,
         username: username,
-        role: role
+        role: role,
+        updated_at: new Date().toISOString()
       })
+      .eq('id', userData.user.id)
 
     if (profileError) {
-      console.error('Error creating profile:', profileError)
-      // If profile creation fails, clean up the user
+      console.error('Error updating profile:', profileError)
+      // If profile update fails, clean up the user
       await supabaseAdmin.auth.admin.deleteUser(userData.user.id)
       return new Response(
-        JSON.stringify({ error: 'Erro ao criar perfil do usuário' }),
+        JSON.stringify({ error: 'Erro ao atualizar perfil do usuário' }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400
